@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lógica & Saúde</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:opsz,wght@5..1200,600;5..1200,700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #f4f0e8;
+      --paper-deep: #e9e1d3;
+      --surface: #fffdf8;
+      --ink: #20241f;
+      --muted: #6d7167;
+      --line: #d9d5ca;
+      --line-strong: #bab4a6;
+
+      --forest: #1f5a48;
+      --forest-dark: #164437;
+      --forest-pale: #e2eee7;
+
+      --blue: #285a82;
+      --blue-dark: #1e4769;
+      --blue-pale: #e4eef5;
+
+      --danger: #a34536;
+      --danger-pale: #fae9e5;
+
+      --radius: 14px;
+      --radius-lg: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 28px;
+      color: var(--ink);
+      font-family: "Manrope", Arial, sans-serif;
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(rgba(32, 36, 31, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32, 36, 31, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .pagina {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      border: 1px solid rgba(32, 36, 31, 0.14);
+      background: rgba(255, 253, 248, 0.74);
+      box-shadow: 0 22px 60px rgba(67, 58, 39, 0.12);
+    }
+
+    .cabecalho-principal {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 36px;
+      align-items: end;
+      padding: 54px 58px 44px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sobrancelha {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--forest);
+      font-family: "DM Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sobrancelha::before {
+      width: 28px;
+      height: 2px;
+      content: "";
+      background: currentColor;
+    }
+
+    h1,
+    h2,
+    .valor-resultado {
+      font-family: "Playfair Display", Georgia, serif;
+    }
+
+    .cabecalho-principal h1 {
+      max-width: 700px;
+      font-size: clamp(2.45rem, 5vw, 4.2rem);
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+
+    .cabecalho-principal p {
+      max-width: 255px;
+      padding-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .grade-painel {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cartao {
+      min-width: 0;
+      padding: 42px 46px 48px;
+      background: var(--surface);
+      transition: background-color 0.25s ease;
+    }
+
+    .cartao + .cartao {
+      border-left: 1px solid var(--line);
+    }
+
+    .cartao:hover {
+      background: #fffefa;
+    }
+
+    .cabecalho-cartao {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 34px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cartao h2 {
+      margin-bottom: 7px;
+      font-size: 1.72rem;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+
+    .subtitulo-cartao {
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 0.69rem;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    .marcador-cartao {
+      display: grid;
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-family: "DM Mono", monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .cartao--imc .marcador-cartao {
+      color: var(--forest);
+      background: var(--forest-pale);
+    }
+
+    .cartao--agua .marcador-cartao {
+      color: var(--blue);
+      background: var(--blue-pale);
+    }
+
+    .grupo-entrada {
+      margin-bottom: 20px;
+    }
+
+    .grupo-entrada label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .envoltorio-entrada {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .envoltorio-entrada input {
+      width: 100%;
+      height: 52px;
+      padding: 0 60px 0 15px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      outline: none;
+      color: var(--ink);
+      background: #fffdf8;
+      font-family: "Manrope", sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .envoltorio-entrada input::placeholder {
+      color: #9a9a90;
+      font-weight: 500;
+    }
+
+    .envoltorio-entrada input:hover {
+      border-color: #8d8b82;
+    }
+
+    .cartao--imc .envoltorio-entrada input:focus {
+      border-color: var(--forest);
+      box-shadow: 0 0 0 3px rgba(31, 90, 72, 0.14);
+    }
+
+    .cartao--agua .envoltorio-entrada input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(40, 90, 130, 0.14);
+    }
+
+    .unidade {
+      position: absolute;
+      right: 15px;
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 0.75rem;
+      pointer-events: none;
+    }
+
+    .grupo-botoes {
+      display: flex;
+      gap: 10px;
+      margin-top: 27px;
+    }
+
+    .botao {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 51px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      cursor: pointer;
+      font-family: "Manrope", sans-serif;
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0.005em;
+      transition: transform 0.16s ease, background-color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .botao svg {
+      transition: transform 0.18s ease;
+    }
+
+    .botao:hover svg {
+      transform: translateX(3px);
+    }
+
+    .botao:active {
+      transform: translateY(1px);
+    }
+
+    .botao:focus-visible {
+      outline: 3px solid rgba(32, 36, 31, 0.2);
+      outline-offset: 3px;
+    }
+
+    .botao-primario,
+    .botao-ciano {
+      flex: 1;
+      color: #fffdf8;
+    }
+
+    .botao-primario {
+      background: var(--forest);
+    }
+
+    .botao-primario:hover {
+      background: var(--forest-dark);
+      box-shadow: 0 8px 15px rgba(22, 68, 55, 0.16);
+    }
+
+    .botao-ciano {
+      background: var(--blue);
+    }
+
+    .botao-ciano:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 8px 15px rgba(30, 71, 105, 0.16);
+    }
+
+    .botao-reset {
+      flex: 0 0 51px;
+      border-color: var(--line);
+      color: var(--muted);
+      background: transparent;
+      font-size: 1rem;
+    }
+
+    .botao-reset:hover {
+      border-color: var(--line-strong);
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .mensagem-erro {
+      display: none;
+      margin-top: 17px;
+      padding: 12px 13px;
+      border: 1px solid #e8bbb0;
+      border-radius: 9px;
+      color: var(--danger);
+      background: var(--danger-pale);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .caixa-resultado {
+      position: relative;
+      margin-top: 26px;
+      padding: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f8f5ee;
+      animation: revelar 0.32s ease both;
+    }
+
+    .caixa-resultado::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      content: "";
+    }
+
+    .cartao--imc .caixa-resultado::before {
+      background: var(--forest);
+    }
+
+    .cartao--agua .caixa-resultado::before {
+      background: var(--blue);
+    }
+
+    .caixa-resultado.oculto {
+      display: none;
+    }
+
+    @keyframes revelar {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cabecalho-resultado {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .rotulo-resultado {
+      color: var(--muted);
+      font-family: "DM Mono", monospace;
+      font-size: 0.67rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .etiqueta-status {
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .valor-resultado {
+      margin-bottom: 5px;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      line-height: 1;
+      word-break: break-all;
+    }
+
+    .descricao-resultado {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .recipiente-progresso {
+      width: 100%;
+      height: 10px;
+      margin: 23px 0;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #d9e0e1;
+    }
+
+    .barra-progresso {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--blue);
+      transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .estatisticas-agua {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .estatisticas-agua > div {
+      min-width: 0;
+      padding: 0 9px;
+      text-align: center;
+    }
+
+    .estatisticas-agua > div + div {
+      border-left: 1px solid var(--line);
+    }
+
+    .titulo-estatistica {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .valor-estatistica {
+      color: var(--ink);
+      font-family: "DM Mono", monospace;
+      font-size: 0.77rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .valor-estatistica.destaque {
+      color: var(--blue);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .cabecalho-principal {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 38px 28px 32px;
+      }
+
+      .cabecalho-principal p {
+        max-width: 440px;
+      }
+
+      .grade-painel {
+        grid-template-columns: 1fr;
+      }
+
+      .cartao {
+        padding: 34px 28px 38px;
+      }
+
+      .cartao + .cartao {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .cabecalho-principal,
+      .cartao {
+        padding-right: 20px;
+        padding-left: 20px;
+      }
+
+      .cabecalho-principal h1 {
+        font-size: 2.3rem;
+      }
+
+      .estatisticas-agua > div {
+        padding: 0 5px;
+      }
+
+      .valor-estatistica {
+        font-size: 0.67rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pagina">
+    <header class="cabecalho-principal">
+      <div>
+        <div class="sobrancelha">Capítulo 1 · Algoritmos & Lógica Matemática</div>
+        <h1>Lógica aplicada à saúde do dia a dia</h1>
+      </div>
+      <p>Duas calculadoras práticas para acompanhar peso corporal e hidratação com precisão.</p>
+    </header>
+
+    <main class="grade-painel">
+      <article class="cartao cartao--imc">
+        <div class="cabecalho-cartao">
+          <div>
+            <h2>Calculadora de IMC</h2>
+            <span class="subtitulo-cartao">Situação A · Classificação corporal</span>
+          </div>
+          <div class="marcador-cartao">A</div>
+        </div>
+
+        <div class="grupo-entrada">
+          <label for="altura">Sua altura</label>
+          <div class="envoltorio-entrada">
+            <input type="text" id="altura" inputmode="decimal" placeholder="Ex: 1.75 ou 175" maxlength="6" autocomplete="off">
+            <span class="unidade">m</span>
+          </div>
+        </div>
+
+        <div class="grupo-entrada">
+          <label for="peso-imc">Seu peso</label>
+          <div class="envoltorio-entrada">
+            <input type="text" id="peso-imc" inputmode="decimal" placeholder="Ex: 70.5" maxlength="6" autocomplete="off">
+            <span class="unidade">kg</span>
+          </div>
+        </div>
+
+        <div class="grupo-botoes">
+          <button id="btn-calcular-imc" class="botao botao-primario" type="button">
+            <span>Calcular IMC</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button id="btn-limpar-imc" class="botao botao-reset" type="button" title="Limpar formulário" aria-label="Limpar formulário">↺</button>
+        </div>
+
+        <div id="erro-imc" class="mensagem-erro" role="alert" aria-live="polite"></div>
+
+        <div id="resultado-imc" class="caixa-resultado oculto">
+          <div class="cabecalho-resultado">
+            <span class="rotulo-resultado">Resultado da análise</span>
+            <span id="etiqueta-imc" class="etiqueta-status">--</span>
+          </div>
+          <div class="valor-resultado" id="valor-imc">0.00</div>
+          <p class="descricao-resultado" id="descricao-imc">Aguardando dados...</p>
+        </div>
+      </article>
+
+      <article class="cartao cartao--agua">
+        <div class="cabecalho-cartao">
+          <div>
+            <h2>Meta diária de água</h2>
+            <span class="subtitulo-cartao">Situação B · Ingestão hídrica</span>
+          </div>
+          <div class="marcador-cartao">B</div>
+        </div>
+
+        <div class="grupo-entrada">
+          <label for="peso-agua">Seu peso corporal</label>
+          <div class="envoltorio-entrada">
+            <input type="text" id="peso-agua" inputmode="decimal" placeholder="Ex: 68.0" maxlength="6" autocomplete="off">
+            <span class="unidade">kg</span>
+          </div>
+        </div>
+
+        <div class="grupo-entrada">
+          <label for="agua-ingerida">Água já ingerida hoje</label>
+          <div class="envoltorio-entrada">
+            <input type="text" id="agua-ingerida" inputmode="decimal" placeholder="Ex: 1000" maxlength="7" autocomplete="off">
+            <span class="unidade">mL</span>
+          </div>
+        </div>
+
+        <div class="grupo-botoes">
+          <button id="btn-calcular-agua" class="botao botao-ciano" type="button">
+            <span>Analisar ingestão</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button id="btn-limpar-agua" class="botao botao-reset" type="button" title="Limpar formulário" aria-label="Limpar formulário">↺</button>
+        </div>
+
+        <div id="erro-agua" class="mensagem-erro" role="alert" aria-live="polite"></div>
+
+        <div id="resultado-agua" class="caixa-resultado oculto">
+          <div class="cabecalho-resultado">
+            <span class="rotulo-resultado">Progresso hídrico</span>
+            <span id="etiqueta-agua" class="etiqueta-status">--</span>
+          </div>
+
+          <div class="recipiente-progresso">
+            <div class="barra-progresso" id="barra-progresso-agua" style="width: 0%"></div>
+          </div>
+
+          <div class="estatisticas-agua">
+            <div>
+              <span class="titulo-estatistica">Meta recomendada</span>
+              <span class="valor-estatistica" id="meta-agua">0 mL</span>
+            </div>
+            <div>
+              <span class="titulo-estatistica">Faltam</span>
+              <span class="valor-estatistica destaque" id="restante-agua">0 mL</span>
+            </div>
+            <div>
+              <span class="titulo-estatistica">Copos (250 mL)</span>
+              <span class="valor-estatistica" id="copos-agua">0</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function extrairNumeroValido(valor) {
+        if (!valor) return NaN;
+        let limpo = valor.toString().replace(',', '.').replace(/[^0-9.]/g, '');
+        const partes = limpo.split('.');
+        if (partes.length > 2) {
+          limpo = partes[0] + '.' + partes.slice(1).join('');
+        }
+        return parseFloat(limpo);
+      }
+
+      function exibirErro(idElemento, mensagem) {
+        const el = document.getElementById(idElemento);
+        el.textContent = mensagem;
+        el.style.display = 'block';
+      }
+
+      function ocultarErro(idElemento) {
+        const el = document.getElementById(idElemento);
+        el.style.display = 'none';
+        el.textContent = '';
+      }
+
+      function processarIMC() {
+        ocultarErro('erro-imc');
+
+        const elAltura = document.getElementById('altura');
+        const elPeso = document.getElementById('peso-imc');
+
+        let altura = extrairNumeroValido(elAltura.value);
+        let peso = extrairNumeroValido(elPeso.value);
+
+        if (altura >= 50 && altura <= 280) {
+          altura = altura / 100;
+          elAltura.value = altura.toFixed(2);
+        }
+
+        if (isNaN(altura) || isNaN(peso)) {
+          exibirErro('erro-imc', 'Informe números válidos para peso e altura.');
+          return;
+        }
+
+        if (altura < 0.5 || altura > 2.8) {
+          exibirErro('erro-imc', 'Altura fora dos limites plausíveis (0.50m a 2.80m).');
+          return;
+        }
+
+        if (peso < 2 || peso > 500) {
+          exibirErro('erro-imc', 'Peso fora dos limites plausíveis (2kg a 500kg).');
+          return;
+        }
+
+        const imc = peso / (altura * altura);
+        let textoStatus = "";
+        let corStatus = "";
+        let fundoStatus = "";
+
+        if (imc < 18.5) {
+          textoStatus = "Abaixo do Peso";
+          corStatus = "#2a4b7c";
+          fundoStatus = "rgba(42, 75, 124, 0.12)";
+        } else if (imc < 25.0) {
+          textoStatus = "Peso Ideal";
+          corStatus = "#1f5d4e";
+          fundoStatus = "rgba(31, 93, 78, 0.12)";
+        } else if (imc < 30.0) {
+          textoStatus = "Sobrepeso";
+          corStatus = "#9a6a1f";
+          fundoStatus = "rgba(154, 106, 31, 0.12)";
+        } else if (imc <= 40.0) {
+          textoStatus = "Obesidade";
+          corStatus = "#9a3b2b";
+          fundoStatus = "rgba(154, 59, 43, 0.11)";
+        } else {
+          textoStatus = "Obesidade Mórbida";
+          corStatus = "#7a2c1f";
+          fundoStatus = "rgba(122, 44, 31, 0.13)";
+        }
+
+        const caixaResultado = document.getElementById('resultado-imc');
+        const textoValor = document.getElementById('valor-imc');
+        const textoDescricao = document.getElementById('descricao-imc');
+        const etiqueta = document.getElementById('etiqueta-imc');
+
+        caixaResultado.classList.remove('oculto');
+        textoValor.textContent = imc.toFixed(2);
+        textoValor.style.color = corStatus;
+
+        etiqueta.textContent = textoStatus;
+        etiqueta.style.color = corStatus;
+        etiqueta.style.backgroundColor = fundoStatus;
+
+        textoDescricao.textContent = `Resultado: ${imc.toFixed(2)} kg/m² (${textoStatus}).`;
+      }
+
+      function limparIMC() {
+        document.getElementById('altura').value = '';
+        document.getElementById('peso-imc').value = '';
+        document.getElementById('resultado-imc').classList.add('oculto');
+        ocultarErro('erro-imc');
+      }
+
+      function processarAgua() {
+        ocultarErro('erro-agua');
+
+        const peso = extrairNumeroValido(document.getElementById('peso-agua').value);
+        let ingerida = extrairNumeroValido(document.getElementById('agua-ingerida').value);
+
+        if (isNaN(ingerida)) ingerida = 0;
+
+        if (isNaN(peso) || peso < 2 || peso > 500) {
+          exibirErro('erro-agua', 'Informe um peso corporal válido para o cálculo da meta.');
+          return;
+        }
+
+        if (ingerida < 0 || ingerida > 20000) {
+          exibirErro('erro-agua', 'Quantidade de água ingerida inválida.');
+          return;
+        }
+
+        const metaTotal = peso * 35;
+        const restante = metaTotal - ingerida;
+        const percentual = Math.min(Math.max((ingerida / metaTotal) * 100, 0), 100);
+
+        const caixaResultado = document.getElementById('resultado-agua');
+        const barraProgresso = document.getElementById('barra-progresso-agua');
+        const textoMeta = document.getElementById('meta-agua');
+        const textoRestante = document.getElementById('restante-agua');
+        const textoCopos = document.getElementById('copos-agua');
+        const etiqueta = document.getElementById('etiqueta-agua');
+
+        caixaResultado.classList.remove('oculto');
+        barraProgresso.style.width = `${percentual.toFixed(0)}%`;
+        textoMeta.textContent = `${Math.round(metaTotal)} mL`;
+
+        if (restante <= 0) {
+          etiqueta.textContent = "Meta Atingida! 🎉";
+          etiqueta.style.color = "#1f5d4e";
+          etiqueta.style.backgroundColor = "rgba(31, 93, 78, 0.12)";
+
+          textoRestante.textContent = "0 mL";
+          textoCopos.textContent = "0";
+        } else {
+          const coposFaltantes = Math.ceil(restante / 250);
+
+          etiqueta.textContent = "Em Progresso";
+          etiqueta.style.color = "#2a4b7c";
+          etiqueta.style.backgroundColor = "rgba(42, 75, 124, 0.1)";
+
+          textoRestante.textContent = `${Math.round(restante)} mL`;
+          textoCopos.textContent = coposFaltantes;
+        }
+      }
+
+      function limparAgua() {
+        document.getElementById('peso-agua').value = '';
+        document.getElementById('agua-ingerida').value = '';
+        document.getElementById('resultado-agua').classList.add('oculto');
+        ocultarErro('erro-agua');
+      }
+
+      document.getElementById('btn-calcular-imc').addEventListener('click', processarIMC);
+      document.getElementById('btn-limpar-imc').addEventListener('click', limparIMC);
+      document.getElementById('btn-calcular-agua').addEventListener('click', processarAgua);
+      document.getElementById('btn-limpar-agua').addEventListener('click', limparAgua);
+
+      const entradas = document.querySelectorAll('input');
+      entradas.forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            if (input.id === 'altura' || input.id === 'peso-imc') {
+              processarIMC();
+            } else if (input.id === 'peso-agua' || input.id === 'agua-ingerida') {
+              processarAgua();
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
