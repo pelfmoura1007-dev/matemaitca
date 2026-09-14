@@ -1,0 +1,63 @@
+programa
+{
+	funcao inicio()
+	{
+		// Declaração de Variáveis (Real para números com vírgula/ponto, Cadeia para texto)
+		real peso, altura, imc
+		cadeia classificacao
+
+		escreva("=== SISTEMA DE ANÁLISE CORPORAL (IMC) ===\n\n")
+
+		// Entradas de Dados do Usuário
+		escreva("Digite o seu peso (em kg, ex: 70.5): ")
+		leia(peso)
+
+		escreva("Digite a sua altura (em metros, ex: 1.75): ")
+		leia(altura)
+
+		// Tratamento de segurança: se o usuário digitar a altura em centímetros (ex: 175 em vez de 1.75)
+		se (altura > 3.0) 
+		{
+			altura = altura / 100.0
+		}
+
+		// Validação de entrada dos dados para evitar valores impossíveis
+		se (peso <= 0.0 ou altura <= 0.0)
+		{
+			escreva("\n[ERRO] Por favor, insira valores válidos maiores que zero.\n")
+		}
+		senao
+		{
+			// Processamento: Fórmula do IMC (Peso dividido pela Altura ao quadrado)
+			imc = peso / (altura * altura)
+
+			// Estrutura Condicional Encadeada para definir a Classificação
+			se (imc < 18.5)
+			{
+				classificacao = "Abaixo do Peso"
+			}
+			senao se (imc < 25.0)
+			{
+				classificacao = "Peso Ideal"
+			}
+			senao se (imc < 30.0)
+			{
+				classificacao = "Sobrepeso"
+			}
+			senao se (imc <= 40.0)
+			{
+				classificacao = "Obesidade"
+			}
+			senao
+			{
+				classificacao = "Obesidade Mórbida"
+			}
+
+			// Saída de Resultados formatada
+			escreva("\n----------------------------------------")
+			escreva("\nSeu IMC calculado é: ", imc)
+			escreva("\nClassificação Corporal: ", classificacao)
+			escreva("\n----------------------------------------\n")
+		}
+	}
+}
