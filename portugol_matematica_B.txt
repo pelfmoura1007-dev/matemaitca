@@ -1,0 +1,56 @@
+programa
+{
+	inclua biblioteca Matematica --> mat // Biblioteca usada para arredondamentos
+
+	funcao inicio()
+	{
+		// Declaração de Variáveis
+		real peso, aguaIngerida, metaTotal, aguaRestante
+		inteiro coposFaltantes
+		constante real ML_POR_KG = 35.0   // Regra de negócio: 35ml de água por kg
+		constante real ML_POR_COPO = 250.0 // Tamanho padrão do copo: 250ml
+
+		escreva("=== MONITORAMENTO DE INGESTÃO HÍDRICA ===\n\n")
+
+		// Entradas de Dados do Usuário
+		escreva("Digite o seu peso corporal (em kg): ")
+		leia(peso)
+
+		escreva("Digite a quantidade de água já bebida hoje (em mL): ")
+		leia(aguaIngerida)
+
+		// Validação dos dados digitados
+		se (peso <= 0.0 ou aguaIngerida < 0.0)
+		{
+			escreva("\n[ERRO] Informe valores de peso e consumo de água válidos.\n")
+		}
+		senao
+		{
+			// Processamento: Cálculo da meta total diária baseada no peso
+			metaTotal = peso * ML_POR_KG
+			
+			// Cálculo da diferença restante para atingir a meta
+			aguaRestante = metaTotal - aguaIngerida
+
+			// Saída dos Dados Principais
+			escreva("\n----------------------------------------")
+			escreva("\nSua meta diária ideal é: ", mat.arredondar(metaTotal, 0), " mL")
+			escreva("\nVocê já consumiu hoje: ", mat.arredondar(aguaIngerida, 0), " mL")
+
+			// Estrutura Condicional para verificar o progresso da meta
+			se (aguaRestante <= 0.0)
+			{
+				escreva("\n\nParabéns! Você já atingiu ou superou a sua meta diária de água! 🎉")
+			}
+			senao
+			{
+				// Arredonda a quantidade de copos para um número inteiro completo usando divisão
+				coposFaltantes = (aguaRestante / ML_POR_COPO) + 0.9999 
+
+				escreva("\nAinda faltam: ", mat.arredondar(aguaRestante, 0), " mL para atingir a meta.")
+				escreva("\nFaltam aproximadamente ", coposFaltantes, " copo(s) de 250 mL.")
+			}
+			escreva("\n----------------------------------------\n")
+		}
+	}
+}
